@@ -46,6 +46,12 @@ parser.add_argument(
     help='Thickness of the base plate in mm'
 )
 parser.add_argument(
+    '--hole-diameter',
+    type=float,
+    default=1.0,
+    help='Diameter of the hole through the cylinder in mm (0 for solid cylinder)'
+)
+parser.add_argument(
     '--no-export',
     action='store_true',
     help='Skip exporting STL and STEP files (display only)'
@@ -60,6 +66,8 @@ plate_thickness = args.plate_thickness  # mm - configurable
 cylinder_diameter = args.cylinder_diameter  # mm - variable
 cylinder_radius = cylinder_diameter / 2.0  # mm - calculated
 cylinder_height = args.cylinder_height  # mm - variable
+hole_diameter = args.hole_diameter  # mm - variable
+hole_radius = hole_diameter / 2.0  # mm - calculated
 
 # Build the circular plate with cylinder using Algebra mode
 with BuildPart() as circular_plate_cylinder:
@@ -73,8 +81,14 @@ with BuildPart() as circular_plate_cylinder:
         Circle(cylinder_radius)
     extrude(amount=cylinder_height)
 
+    # Add hole through the cylinder if hole_diameter > 0
+    if hole_diameter > 0:
+        with BuildSketch(Plane.XY) as hole_sketch:
+            Circle(hole_radius)
+        extrude(amount=plate_thickness + cylinder_height, mode=Mode.SUBTRACT)
+
     # Add embossed plate diameter text on top of the cylinder
-    text_height = 0.5  # mm - embossed text height
+    text_height = 0.8  # mm - embossed text height (increased for better visibility)
     font_size = cylinder_diameter * 0.4  # Scale font size to fit on cylinder
 
     with BuildSketch(Plane.XY.offset(plate_thickness + cylinder_height)) as text_sketch:
@@ -124,12 +138,13 @@ else:
     print("Export skipped (--no-export flag set)")
 
 # Print dimensions for verification
-text_height = 0.5  # mm - must match the value used in geometry
+text_height = 0.8  # mm - must match the value used in geometry
 print(f"Design Parameters:")
 print(f"  Plate diameter: {plate_diameter}mm")
 print(f"  Plate thickness: {plate_thickness}mm")
 print(f"  Cylinder diameter: {cylinder_diameter}mm")
 print(f"  Cylinder height: {cylinder_height}mm")
+print(f"  Hole diameter: {hole_diameter}mm" + (" (solid)" if hole_diameter == 0 else ""))
 print(f"  Embossed text height: {text_height}mm")
 print(f"  Total height: {plate_thickness + cylinder_height + text_height}mm")
 print(f"\nFDM Printability: ✓ No supports required")

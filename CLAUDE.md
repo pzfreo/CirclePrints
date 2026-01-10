@@ -43,26 +43,32 @@ The initial design is a circular plate with a concentric cylinder:
 - Positioned concentrically on top of the plate
 - Default diameter: 4mm (variable parameter)
 - Height: 10mm (variable parameter)
-- Embossed diameter text on top face (0.5mm height)
-- Total assembly height: 11.5mm (plate + cylinder + text)
+- Through-hole: 1mm diameter (variable, set to 0 for solid)
+- Embossed diameter text on top face (0.8mm height)
+- Total assembly height: 11.8mm (plate + cylinder + text)
 
 **Parameters:**
 - `plate_diameter`: Default 11mm
 - `cylinder_diameter`: Default 4mm
 - `cylinder_height`: Default 10mm
 - `plate_thickness`: 1mm (fixed)
-- Embossed text height: 0.5mm (fixed)
+- `hole_diameter`: Default 1mm (0 for solid cylinder)
+- Embossed text height: 0.8mm (fixed)
 
 **CLI Usage:**
 ```bash
-python circular_plate_cone.py -p 11 -c 4  # defaults
-python circular_plate_cone.py --help       # show all options
+python circular_plate_cone.py -p 11 -c 4                    # defaults (with 1mm hole)
+python circular_plate_cone.py --hole-diameter 0             # solid cylinder, no hole
+python circular_plate_cone.py -p 20 -c 8 --hole-diameter 3  # custom sizes with 3mm hole
+python circular_plate_cone.py --help                        # show all options
 ```
 
 **Features:**
 - Automatic embossed plate diameter labeling on cylinder top
+- Configurable through-hole (default 1mm, set to 0 for solid)
 - Font size scales with cylinder diameter to fit properly (40% of cylinder diameter)
-- Support-free FDM printing (text on top face)
+- Deeper embossed text (0.8mm) for better visibility during printing
+- Support-free FDM printing (text on top face, hole runs straight through)
 
 ## Role
 

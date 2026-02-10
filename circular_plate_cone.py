@@ -87,14 +87,16 @@ with BuildPart() as circular_plate_cylinder:
             Circle(hole_radius)
         extrude(amount=plate_thickness + cylinder_height, mode=Mode.SUBTRACT)
 
-    # Add embossed plate diameter text on top of the cylinder
-    text_height = 0.8  # mm - embossed text height (increased for better visibility)
-    font_size = cylinder_diameter * 0.4  # Scale font size to fit on cylinder
+    # Engrave plate diameter text into the bottom of the plate, offset from center
+    text_height = 0.8  # mm - engraved text depth
+    font_size = (plate_radius - cylinder_radius) * 0.6  # Scale to fit between cylinder and plate edge
+    text_offset_y = (cylinder_radius + plate_radius) / 2  # Midpoint between cylinder edge and plate edge
 
-    with BuildSketch(Plane.XY.offset(plate_thickness + cylinder_height)) as text_sketch:
+    with BuildSketch(Plane.XY) as text_sketch:
         text_str = f"{plate_diameter:.0f}" if plate_diameter == int(plate_diameter) else f"{plate_diameter:.1f}"
-        Text(text_str, font_size=font_size, align=(Align.CENTER, Align.CENTER))
-    extrude(amount=text_height)
+        with Locations([(0, text_offset_y)]):
+            Text(text_str, font_size=font_size, align=(Align.CENTER, Align.CENTER))
+    extrude(amount=text_height, mode=Mode.SUBTRACT)
 
 # Get the part object
 part = circular_plate_cylinder.part
@@ -145,8 +147,8 @@ print(f"  Plate thickness: {plate_thickness}mm")
 print(f"  Cylinder diameter: {cylinder_diameter}mm")
 print(f"  Cylinder height: {cylinder_height}mm")
 print(f"  Hole diameter: {hole_diameter}mm" + (" (solid)" if hole_diameter == 0 else ""))
-print(f"  Embossed text height: {text_height}mm")
+print(f"  Engraved text depth: {text_height}mm (bottom of plate)")
 print(f"  Total height: {plate_thickness + cylinder_height + text_height}mm")
-print(f"\nFDM Printability: ✓ No supports required")
-print(f"  - Embossed text '{int(plate_diameter) if plate_diameter == int(plate_diameter) else plate_diameter}' (plate diameter) on cylinder top")
+print(f"\nFDM Printability:")
+print(f"  - Engraved text '{int(plate_diameter) if plate_diameter == int(plate_diameter) else plate_diameter}' (plate diameter) on plate bottom, off-center")
 print(f"Build plate fit: ✓ Fits within 256x256mm")

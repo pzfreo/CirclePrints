@@ -42,7 +42,7 @@ parser.add_argument(
 parser.add_argument(
     '--plate-thickness',
     type=float,
-    default=1.0,
+    default=2.0,
     help='Thickness of the base plate in mm'
 )
 parser.add_argument(
@@ -89,7 +89,7 @@ with BuildPart() as circular_plate_cylinder:
 
     # Engrave plate diameter text into the bottom of the plate, offset from center
     text_height = 0.8  # mm - engraved text depth
-    font_size = (plate_radius - cylinder_radius) * 0.6  # Scale to fit between cylinder and plate edge
+    font_size = (plate_radius - cylinder_radius) * 0.6 + 1  # Scale to fit, +1pt
     text_offset_y = (cylinder_radius + plate_radius) / 2  # Midpoint between cylinder edge and plate edge
 
     with BuildSketch(Plane.XY) as text_sketch:
